@@ -14,22 +14,39 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) { ExitWithError "npm i
 # Install dependencies (prefer CI if lockfile present)
 if (Test-Path "package-lock.json") {
   Write-Host "Found package-lock.json — running npm ci..."
-  npm ci || ExitWithError "npm ci failed"
+  npm ci
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "npm ci failed; attempting npm install as fallback..."
+    npm install --no-audit --no-fund
+    if ($LASTEXITCODE -ne 0) { ExitWithError "Both npm ci and npm install failed" }
+  }
 } else {
   Write-Host "Running npm install..."
-  npm install || ExitWithError "npm install failed"
+  npm install
+  if ($LASTEXITCODE -ne 0) { ExitWithError "npm install failed" }
 }
 
 # Start dev server in new PowerShell window so tests can run in parallel
 Write-Host "Starting Vite dev server in a new window..."
-Start-Process pwsh -ArgumentList "-NoExit","-Command","npm run dev" -WindowStyle Normal
+# Try to open dev server in a new terminal: prefer pwsh, then powershell.exe, otherwise fallback to cmd start
+$pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+$powershellCmd = Get-Command powershell.exe -ErrorAction SilentlyContinue
+if ($pwshCmd) {
+  Start-Process -FilePath $pwshCmd.Source -ArgumentList "-NoExit","-Command","npm run dev" -WindowStyle Normal
+} elseif ($powershellCmd) {
+  Start-Process -FilePath $powershellCmd.Source -ArgumentList "-NoExit","-Command","npm run dev" -WindowStyle Normal
+} else {
+  Write-Host "Neither pwsh nor powershell.exe found; falling back to cmd start"
+  Start-Process -FilePath "cmd.exe" -ArgumentList "/c","start","npm run dev" -WindowStyle Normal
+}
 
 # Give dev server a moment to start (optional)
 Start-Sleep -Seconds 2
 
 # Run tests
 Write-Host "Running tests (Jest)..."
-npm run test || ExitWithError "Tests failed"
+npm run test
+if ($LASTEXITCODE -ne 0) { ExitWithError "Tests failed" }
 
 Write-Host "All steps done. To run Cypress interactively, ensure the dev server is running and execute: npm run cypress"
 Write-Host "To run Cypress headless: npm run cypress:run"
