@@ -16,37 +16,50 @@ Esta separación permite testear la lógica de negocio de forma aislada y facili
 
 ## Instalación y ejecución automática
 
-Puedes instalar dependencias, iniciar el servidor de desarrollo y ejecutar los tests automáticamente usando el script PowerShell:
+> Nota: El script `./scripts/run-all.ps1` es un helper para entornos Windows (PowerShell). Si trabajas en macOS/Linux sigue los pasos manuales que se indican más abajo.
+
+Puedes instalar dependencias, iniciar el servidor de desarrollo y ejecutar los tests automáticamente usando el script PowerShell (Windows PowerShell / PowerShell Core):
 
 ```powershell
-# Ejecuta esto desde la raíz del repositorio
+# Ejecuta esto desde la raíz del repositorio (Windows PowerShell)
 ./scripts/run-all.ps1
 ```
 
 Este script realiza:
-- Instalación de dependencias (`npm install`)
-- Arranque del servidor Vite (`npm run dev`)
+- Instalación de dependencias (`npm ci` si existe `package-lock.json`, o `npm install`)
+- Arranque del servidor Vite en una ventana nueva (`npm run dev`)
 - Ejecución de tests unitarios (`npm run test`)
-- Sugerencia para ejecutar Cypress (`npm run cypress`)
+- Instrucciones para ejecutar Cypress (`npm run cypress`)
 
 ---
 
-Instalación y ejecución
+Instalación y ejecución (manual / multiplataforma)
+
+Prerequisitos:
+- Node.js >= 18
+- npm >= 9
 
 1. Clonar el repositorio
    - `git clone https://github.com/Gatroxm/ArticleManagement-App.git`
 2. Instalar dependencias
-   - `npm install`
+   - Si tienes `package-lock.json` (recomendado): `npm ci`
+   - Si no: `npm install`
 3. Ejecutar en desarrollo
    - `npm run dev`
 4. Build de producción
    - `npm run build`
+   - Ver la build (preview): `npm run preview`
 5. Ejecutar tests unitarios (Jest)
-   - `npm run test`
-   - Ejecutar un solo test: `npx jest path/to/file.test.ts -i` o `npm test -- -- --testPathPattern=path/to/file.test.ts`
+   - Todos: `npm run test`
+   - Ejecutar un solo test (ej): `npx jest src/modules/articles/tests/ArticleForm.test.ts -i`
+   - Alternativa: `npm test -- --testPathPattern=src/modules/articles/tests/ArticleForm.test.ts`
 6. Ejecutar E2E (Cypress)
-   - `npm run cypress` (interfaz)
-   - `npm run cypress:run` (headless)
+   - Paso 1: Levanta el servidor (dev o preview), por ejemplo `npm run dev` o en otra terminal `npm run preview`
+   - Paso 2: En otra terminal ejecuta:
+     - Interactivo: `npm run cypress`
+     - Headless: `npm run cypress:run`
+
+---
 
 Decisiones técnicas resumidas
 - Arquitectura: Vertical Slice + Hexagonal. El dominio reside en `src/modules/articles/domain`, los adaptadores en `src/modules/articles/infra` y la presentación en `src/modules/articles/`.

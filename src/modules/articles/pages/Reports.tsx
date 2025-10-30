@@ -21,12 +21,13 @@ export default function Reports() {
   const [form, setForm] = useState<Partial<Report>>({});
 
   // Crear nuevo reporte
-  const handleCreate = (e: any) => {
+  const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.nombre || !form.tipo || !form.fecha) return;
     setReports([...reports, { id: Date.now(), nombre: form.nombre, tipo: form.tipo, fecha: form.fecha }]);
     setForm({});
   };
+
 
   // Editar reporte
   const handleEdit = (id: number) => {
@@ -36,12 +37,13 @@ export default function Reports() {
       setForm(r);
     }
   };
-  const handleUpdate = (e: any) => {
+  const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setReports(reports.map(r => r.id === editingId ? { ...r, ...form } : r));
     setEditingId(null);
     setForm({});
   };
+
 
   // Eliminar reporte
   const handleDelete = (id: number) => {

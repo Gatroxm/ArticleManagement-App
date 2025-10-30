@@ -34,7 +34,7 @@ describe('ArticleForm', () => {
 
   it('llama al create.mutateAsync cuando payload válido', async () => {
     const createMock = { mutateAsync: jest.fn().mockResolvedValue({ id: 'a-1' }) }
-    jest.spyOn(useArticles, 'useCreateArticle').mockReturnValue(createMock as any)
+    jest.spyOn(useArticles, 'useCreateArticle').mockReturnValue(createMock as unknown as ReturnType<typeof useArticles.useCreateArticle>)
 
     renderWithClient(<ArticleForm />)
 

@@ -26,17 +26,17 @@ export default function ArticleForm({ onCreated }: { onCreated?: () => void }) {
     }
   }, [existing])
 
-  const submit = async (e: any) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const payload = { title, content, categoryId }
     const v = validateArticlePayload(payload)
     if (Object.keys(v).length) return setErrors(v)
     try {
       if (id) await update.mutateAsync({ id, payload })
-      else await create.mutateAsync(payload as any)
-  if (onCreated) onCreated()
-  else nav('/articles')
-    } catch (err) {
+      else await create.mutateAsync(payload)
+      if (onCreated) onCreated()
+      else nav('/articles')
+    } catch {
       setErrors({ form: 'Error al guardar el artículo' })
     }
   }

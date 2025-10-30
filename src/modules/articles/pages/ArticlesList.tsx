@@ -28,9 +28,10 @@ export default function ArticlesList() {
   // Paginación y búsqueda
   const [page, setPage] = useState(1)
   const pageSize = 10
-  let filtered = categoryId ? articles?.filter((a: any) => a.categoryId === categoryId) : articles
+  type Article = { id: string; title: string; content: string; categoryId: string }
+  let filtered = categoryId ? articles?.filter((a: Article) => a.categoryId === categoryId) : articles
   if (search.trim()) {
-    filtered = filtered?.filter((a: any) => a.title.toLowerCase().includes(search.toLowerCase()) || a.content.toLowerCase().includes(search.toLowerCase()))
+    filtered = filtered?.filter((a: Article) => a.title.toLowerCase().includes(search.toLowerCase()) || a.content.toLowerCase().includes(search.toLowerCase()))
   }
   const total = filtered?.length || 0
   const totalPages = Math.ceil(total / pageSize)
@@ -53,7 +54,7 @@ export default function ArticlesList() {
               <div className="d-flex gap-2 align-items-center">
                 <select className="form-select" style={{ minWidth: 200 }} value={categoryId} onChange={e => { setCategoryId(e.target.value); setPage(1); }}>
                   <option value="">Todas las categorías</option>
-                  {categories.map((cat: any) => (
+                  {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
@@ -62,8 +63,9 @@ export default function ArticlesList() {
               <button className="btn btn-primary" onClick={() => setShowModal(true)}>Crear artículo</button>
             </div>
             <div className="row g-3">
-              {paginated.map((a: any) => (
-                <div key={a.id} className="col-12">
+                {paginated.map((a) => (
+                  <div key={a.id} className="col-12">
+
                   <div className="card border-0 shadow-sm d-flex flex-row align-items-center justify-content-between p-3">
                     <div>
                       <Link to={`/articles/${a.id}`} className="h5 fw-bold text-primary text-decoration-none" style={{ fontFamily: 'Montserrat, sans-serif' }}>{a.title}</Link>

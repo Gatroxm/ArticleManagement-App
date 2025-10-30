@@ -7,7 +7,7 @@ export default function CategoryForm({ onCreated }: { onCreated?: () => void }) 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const submit = async (e: any) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name.trim()) return setError('El nombre es obligatorio');
     setLoading(true);
@@ -16,12 +16,13 @@ export default function CategoryForm({ onCreated }: { onCreated?: () => void }) 
       setName('');
       setParentId('');
       setError('');
-    if (onCreated) onCreated();
+      if (onCreated) onCreated();
     } catch {
       setError('Error al crear la categoría');
     }
     setLoading(false);
   };
+
 
   return (
     <form className="card p-3 mb-4"  onSubmit={submit}>
