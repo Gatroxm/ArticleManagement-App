@@ -59,8 +59,8 @@ export default function ArticleDetailModal({ article, onClose, onUpdated }: Prop
             <h5 className="modal-title">{editing ? 'Editar artículo' : 'Detalle de artículo'}</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
-          <div className="text-muted small mb-2">Creado: {new Date(article.createdAt).toLocaleString()}</div>
           <div className="modal-body">
+            <div className="text-muted small mb-2">Creado: {new Date(article.createdAt).toLocaleString()}</div>
             {editing ? (
               <form onSubmit={handleUpdate}>
                 <div className="mb-2">

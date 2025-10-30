@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import ArticleDetailModal from './ArticleDetailModal';
 import ArticleForm from './ArticleForm';
 import { useArticles } from '../hooks/useArticles';
@@ -29,7 +28,7 @@ export default function ArticlesList() {
 
   // Paginación y búsqueda
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const pageSize = 5
   type Article = { id: string; title: string; content: string; categoryId: string }
   let filtered = categoryId ? articles?.filter((a: Article) => a.categoryId === categoryId) : articles
   if (search.trim()) {
@@ -72,13 +71,22 @@ export default function ArticlesList() {
                         <span className="h5 fw-bold text-primary text-decoration-none" style={{ fontFamily: 'Montserrat, sans-serif' }}>{a.title}</span>
                         <p className="text-secondary small mb-0">{a.content.slice(0, 60)}...</p>
                       </div>
-                      <button className={`btn ${favorites.includes(a.id) ? 'btn-danger' : 'btn-outline-secondary'} ms-3 fw-semibold`} onClick={e => { e.stopPropagation(); dispatch(toggleFavorite(a.id)); }}>
-                        {favorites.includes(a.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      <button
+                        className="btn btn-link ms-3 p-0 border-0 text-decoration-none"
+                        style={{ fontSize: 28, color: favorites.includes(a.id) ? '#e63946' : '#aaa' }}
+                        title={favorites.includes(a.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                        onClick={e => { e.stopPropagation(); dispatch(toggleFavorite(a.id)); }}
+                      >
+                        {favorites.includes(a.id)
+                          ? <span style={{ fontSize: 28 }}>&#10084;&#65039;</span> // corazón rojo relleno
+                          : <span style={{ fontSize: 28 }}>&#9825;</span> // corazón vacío
+                        }
                       </button>
                     </div>
                   </div>
                 ))}
             </div>
+              {/* Paginador duplicado eliminado, solo queda el de abajo */}
 
             {selectedArticle && (
               <ArticleDetailModal
