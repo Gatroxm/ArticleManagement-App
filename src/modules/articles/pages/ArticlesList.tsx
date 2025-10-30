@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import ArticleDetailModal from './ArticleDetailModal';
 import ArticleForm from './ArticleForm';
 import { useArticles } from '../hooks/useArticles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +24,8 @@ export default function ArticlesList() {
   }, [])
 
   // Modal para crear artículo
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<Article|null>(null);
 
   // Paginación y búsqueda
   const [page, setPage] = useState(1)
@@ -65,19 +67,26 @@ export default function ArticlesList() {
             <div className="row g-3">
                 {paginated.map((a) => (
                   <div key={a.id} className="col-12">
-
-                  <div className="card border-0 shadow-sm d-flex flex-row align-items-center justify-content-between p-3">
-                    <div>
-                      <Link to={`/articles/${a.id}`} className="h5 fw-bold text-primary text-decoration-none" style={{ fontFamily: 'Montserrat, sans-serif' }}>{a.title}</Link>
-                      <p className="text-secondary small mb-0">{a.content.slice(0, 60)}...</p>
+                    <div className="card border-0 shadow-sm d-flex flex-row align-items-center justify-content-between p-3" style={{ cursor: 'pointer' }} onClick={() => setSelectedArticle(a)}>
+                      <div>
+                        <span className="h5 fw-bold text-primary text-decoration-none" style={{ fontFamily: 'Montserrat, sans-serif' }}>{a.title}</span>
+                        <p className="text-secondary small mb-0">{a.content.slice(0, 60)}...</p>
+                      </div>
+                      <button className={`btn ${favorites.includes(a.id) ? 'btn-danger' : 'btn-outline-secondary'} ms-3 fw-semibold`} onClick={e => { e.stopPropagation(); dispatch(toggleFavorite(a.id)); }}>
+                        {favorites.includes(a.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      </button>
                     </div>
-                    <button className={`btn ${favorites.includes(a.id) ? 'btn-danger' : 'btn-outline-secondary'} ms-3 fw-semibold`} onClick={() => dispatch(toggleFavorite(a.id))}>
-                      {favorites.includes(a.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-                    </button>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
+
+            {selectedArticle && (
+              <ArticleDetailModal
+                article={selectedArticle as any}
+                onClose={() => setSelectedArticle(null)}
+                onUpdated={() => { setSelectedArticle(null); setPage(1); }}
+              />
+            )}
             {/* Modal para crear artículo */}
             {showModal && (
               <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.3)' }} tabIndex={-1}>

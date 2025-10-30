@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api } from '../infra/localStorageApi';
 
-export default function CategoryForm({ onCreated }: { onCreated?: () => void }) {
+export default function CategoryForm({ onCreated, parentOptions }: { onCreated?: () => void; parentOptions?: Array<{ id: string; name: string }> }) {
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState('');
   const [error, setError] = useState('');
@@ -12,7 +12,7 @@ export default function CategoryForm({ onCreated }: { onCreated?: () => void }) 
     if (!name.trim()) return setError('El nombre es obligatorio');
     setLoading(true);
     try {
-      await api.createCategory({ name, parentId: parentId || undefined });
+      await api.createCategory({ name, parentId: parentOptions ? parentId : undefined });
       setName('');
       setParentId('');
       setError('');
@@ -23,17 +23,23 @@ export default function CategoryForm({ onCreated }: { onCreated?: () => void }) 
     setLoading(false);
   };
 
-
   return (
-    <form className="card p-3 mb-4"  onSubmit={submit}>
+    <form className="card p-3 mb-4" onSubmit={submit}>
       <div className="mb-2">
         <label className="form-label">Nombre</label>
         <input className="form-control" value={name} onChange={e => setName(e.target.value)} />
       </div>
-      <div className="mb-2">
-        <label className="form-label">ID de categoría padre (opcional)</label>
-        <input className="form-control" value={parentId} onChange={e => setParentId(e.target.value)} />
-      </div>
+      {parentOptions ? (
+        <div className="mb-2">
+          <label className="form-label">Categoría padre</label>
+          <select className="form-select" value={parentId} onChange={e => setParentId(e.target.value)}>
+            <option value="">Selecciona una categoría padre</option>
+            {parentOptions.map(opt => (
+              <option key={opt.id} value={opt.id}>{opt.name}</option>
+            ))}
+          </select>
+        </div>
+      ) : null}
       {error && <div className="text-danger small mb-2">{error}</div>}
       <button type="submit" className="btn btn-success" disabled={loading}>Crear</button>
     </form>

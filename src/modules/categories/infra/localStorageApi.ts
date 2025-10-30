@@ -75,11 +75,13 @@ export const api = {
     return read<Category[]>(CAT_KEY) || [];
   },
   createCategory: async (payload: Omit<Category, 'id'>) => {
+    console.log('Creando categoría:', payload);
     await delay(100);
     const all = read<Category[]>(CAT_KEY) || [];
     const newCat: Category = { ...payload, id: `cat-${Date.now()}` };
     all.push(newCat);
     write(CAT_KEY, all);
+    console.log('Categoría creada:', newCat);
     return newCat;
   },
   deleteCategory: async (id: string) => {
